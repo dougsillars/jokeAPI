@@ -18,4 +18,4 @@ jobs:
           id: 6e74a9f0-8874-4dca-ab06-a9d2abe2384d
           token: ce6463e6c0491c4d9bf70854f67bc679
           file: joke_api_0001.yml
-          echo test, and deploy your project.
+

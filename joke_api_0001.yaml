@@ -47,7 +47,10 @@ paths:
                 test:
                   example: testing
                   type: string
-      responses:
+		        test2:
+		          example: testing
+	              type: string
+	  responses:
         '200':
           description: item created
           content:

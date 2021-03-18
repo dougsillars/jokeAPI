@@ -17,4 +17,4 @@ jobs:
         with:
           id: 6e74a9f0-8874-4dca-ab06-a9d2abe2384d
           token: ${{secrets.BUMP_TOKEN}}
-          file: joke_api_0001.yml
+          file: /joke_api_0001.yml

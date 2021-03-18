@@ -44,6 +44,9 @@ paths:
                   example: knockKnock
                   description: category of the joke (allowed categories TBD)
                   type: string
+                test:
+                  example: testing
+                  type: string
       responses:
         '200':
           description: item created
@@ -101,6 +104,9 @@ components:
         testing:
           type: string
           example: this is a test entry
+        testing2:
+          type: string
+          example: this is another test entry
 servers:
   # Added by API Auto Mocking Plugin
   - description: SwaggerHub API Auto Mocking

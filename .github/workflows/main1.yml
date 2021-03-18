@@ -1,0 +1,20 @@
+name: Deploy documentation
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy-doc:
+    name: Deploy API doc on Bump
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Deploy API documentation
+        uses: bump-sh/github-action@0.2
+        with:
+          id: 6e74a9f0-8874-4dca-ab06-a9d2abe2384d
+          token: ${{secrets.BUMP_TOKEN}}
+          file: joke_api_0001.yml

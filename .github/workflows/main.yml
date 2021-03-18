@@ -16,6 +16,6 @@ jobs:
         uses: bump-sh/github-action@0.2
         with:
           id: 6e74a9f0-8874-4dca-ab06-a9d2abe2384d
-          token: ce6463e6c0491c4d9bf70854f67bc679
+          token: ${{secrets.BUMP_TOKEN}}
           file: joke_api_0001.yml
 

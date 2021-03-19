@@ -19,7 +19,7 @@ paths:
       parameters:
         - in: header
           name: x-admin
-          schema:
+          schema: 
             type: string
           required: true
         
@@ -44,11 +44,11 @@ paths:
                   example: knockKnock
                   description: category of the joke (allowed categories TBD)
                   type: string
-                test:
-                  example: testing
+                testing:
+                  example: this is a test field
+                  description: im trying to break stuff
                   type: string
-	
-	  responses:
+      responses:
         '200':
           description: item created
           content:
@@ -105,9 +105,6 @@ components:
         testing:
           type: string
           example: this is a test entry
-        testing2:
-          type: string
-          example: this is another test entry
 servers:
   # Added by API Auto Mocking Plugin
   - description: SwaggerHub API Auto Mocking

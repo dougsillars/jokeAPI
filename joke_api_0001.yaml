@@ -59,6 +59,48 @@ paths:
           description: 'not authorized'
         '422':
           description: 'parameter missing'
+  /fake_entry:
+    post:
+      tags:
+        - users
+      summary: fakeentry
+      operationId: fake
+      description: fake
+      parameters:
+        - in: header
+          name: x-admin
+          schema: 
+            type: string
+          required: true
+        
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fake
+                - fake1
+              properties:
+                fake:
+                  type: string
+                  example: Knock Knock. Who's there? Hike. Hike Who?
+                  description: The joke
+                fake1:
+                  example: I didn't know you liked Japanese poetry.
+                  description: The punchline.
+                  type: string   
+      responses:
+        '200':
+          description: item created
+          content:
+            application/vnd.json:
+              schema:
+                $ref: '#/components/schemas/Joke'
+        '401':
+          description: 'not authorized'
+        '422':
+          description: 'parameter missing'
        
 
 components:

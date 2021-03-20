@@ -15,6 +15,6 @@ jobs:
       - name: Deploy API documentation
         uses: bump-sh/github-action@0.2
         with:
-          doc: 6e74a9f0-8874-4dca-ab06-a9d2abe2384d
+          doc: 18b7b128-6396-411a-bac7-47967d5a8879
           token: ${{secrets.BUMP_TOKEN}}
           file: /joke_api_0001.yaml

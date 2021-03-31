@@ -59,8 +59,29 @@ paths:
           description: 'not authorized'
         '422':
           description: 'parameter missing'
-  
-
+    get:
+      tags:
+        - developers
+      summary: retrieve a joke
+      operationId: getaJoke
+      parameters:
+        - name: category
+          in: query
+          description: The category of the joke.
+          example: knockknock
+          required: false
+          schema: 
+            type: string
+      responses:
+        '200':
+          description: joke found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Joke'
+            
+        '400':
+          description: 'No Joke.  Seriously. No jokes matched your Request.'
 components:
   schemas:
     Joke:
@@ -102,10 +123,8 @@ components:
           type: string
           format: date-time
           example: '2016-08-29T09:12:33.001Z'
-        testing:
-          type: string
-          example: this is a test entry
+
 servers:
   # Added by API Auto Mocking Plugin
   - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/dougsillars/joke_api_0001/0.001
+    url: https://.../dougsillars/joke_api_0001/0.001

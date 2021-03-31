@@ -17,6 +17,12 @@ let db = new sqlite3.Database('jokeDB', sqlite3.OPEN_READWRITE, (err) => {
     console.error(err.message);
   }
   console.log('Connected to the joke database.');
+  var dbcountQuery = 'SELECT COUNT(*) from jokes';
+  db.all(dbcountQuery,[],(err, count) =>{
+    dbcounter = count[0]['COUNT(*)'];
+    console.log(dbcounter);
+  })
+
 });
 
 
@@ -34,30 +40,69 @@ app.post("/joke", (req,res) => {
     console.log(body.joke);
     var joke = body.joke;
     var punchline=body.punchline;
+    var category = body.category;
 
      if(joke && punchline) {
         //all required entries in request
         //add the joke
+        var currentTime = Date.now();
+        dbcounter++;
+        db.run('INSERT INTO jokes(id, joke, punchline, category, createdAt, thumbsUp, thumbsDown) VALUES(?, ?,?,?,?,?,?)', [dbcounter,joke, punchline,category,currentTime,0,0], (err) => {
+          if(err) {
+            return console.log(err.message); 
+          }
+          console.log('Row was added to the table: ${this.lastID}');
+          console.log("counter", dbcounter);
+        })
         res.sendStatus(200);
      }else{
         //required fields missing
         res.sendStatus(422);
-
      }
-
-     
- 
   }else{
     //not authenticated
     res.sendStatus(401);
 
   }
-
-
-
-
 });
 
+
+//retrieve jokes from the DB
+
+app.get("/joke", (req,res) => {
+  var category ="";
+   category = req.query.category;
+
+  var jokeQuery = 'SELECT id, joke, punchline, thumbsUp, thumbsDown, category, createdAt from jokes WHERE category=="'+category+'"';
+  if(category==null){
+    //pull category
+    jokeQuery = 'SELECT joke, punchline from jokes';
+  }
+  console.log("jokeQuery", jokeQuery);
+  db.all(jokeQuery,[],(err, rows) =>{
+    var numberOfRows = rows.length;
+    console.log("numberOfRows", numberOfRows);
+    rows.forEach((row) =>{
+      console.log(row.joke + " " + row.punchline);
+    });
+    //now select a random joke
+    var random = Math.floor(Math.random() * numberOfRows);
+    console.log("random joke", rows[random].joke);
+    console.log("random punchline", rows[random].punchline);
+    var jokeToReturn = {
+      id: rows[random].id,
+      dateAdded: rows[random].createdAt,
+      joke: rows[random].joke, 
+      punchline:rows[random].punchline,
+      thumbsUp:rows[random].thumbsUp,
+      thumbsDown: rows[random].thumbsDown, 
+      category: rows[random].category
+    }
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(jokeToReturn));
+  });
+
+});
 
 
 

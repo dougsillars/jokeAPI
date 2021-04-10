@@ -82,6 +82,52 @@ paths:
             
         '400':
           description: 'No Joke.  Seriously. No jokes matched your Request.'
+  /thumbsup:
+    post:
+      tags:
+        - developers
+      summary: Upvote a joke
+      operationId: thumbsUp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+              properties:
+                id:
+                  type: string
+                  example: 4
+                  description: The jokeId to be upvoted
+      responses:
+        '200':
+          description: joke upvoted
+        '422':
+          description: required fields missing
+  /thumbsdown:
+    post:
+      tags:
+        - developers
+      summary: Downvote a joke
+      operationId: thumbsDown
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+              properties:
+                id:
+                  type: string
+                  example: 4
+                  description: The jokeId to be downvoted
+      responses:
+        '200':
+          description: joke downvoted
+        '422':
+          description: required fields missing
 components:
   schemas:
     Joke:
@@ -127,4 +173,4 @@ components:
 servers:
   # Added by API Auto Mocking Plugin
   - description: SwaggerHub API Auto Mocking
-    url: https://.../dougsillars/joke_api_0001/0.001
+    url: https://virtserver.swaggerhub.com/dougsillars/joke_api_0001/0.001

@@ -104,6 +104,64 @@ app.get("/joke", (req,res) => {
 
 });
 
+//thumbsup
+
+app.post("/thumbsup", (req,res) => {
+    //we just need the jokeId 
+    var jokeId =req.body.id;
+  console.log('jokeId',jokeId);
+    if(jokeId >0){
+      //we have a JokeId
+      //grab the joke from the DB
+      var thumbsUpQuery = 'SELECT id, thumbsUp, createdAt from jokes WHERE id=="'+jokeId+'"';
+      
+      db.all(thumbsUpQuery,[],(err, rows) =>{
+        var thumbsUp = rows[0]['thumbsUp'];
+        console.log('thumbsUp',thumbsUp );
+        thumbsUp++;
+       let thumbsUpdata = [thumbsUp, jokeId];
+       let sql = 'UPDATE jokes SET thumbsUp=? WHERE id= ?';
+       db.run(sql, thumbsUpdata, function(err){
+            if (err) {
+              return console.error(err.message);
+            }
+            console.log(`Row(s) updated: ${this.changes}`);
+            res.sendStatus(200);
+       })
+      });
+    }else{
+      //required fields missing
+      res.sendStatus(422);
+    }
+});
+app.post("/thumbsdown", (req,res) => {
+  //we just need the jokeId 
+  var jokeId =req.body.id;
+console.log('jokeId',jokeId);
+  if(jokeId >0){
+    //we have a JokeId
+    //grab the joke from the DB
+    var thumbsUpQuery = 'SELECT id, thumbsDown, createdAt from jokes WHERE id=="'+jokeId+'"';
+    
+    db.all(thumbsUpQuery,[],(err, rows) =>{
+      var thumbsUp = rows[0]['thumbsDown'];
+      console.log('thumbsDown',thumbsUp );
+      thumbsUp++;
+     let thumbsUpdata = [thumbsUp, jokeId];
+     let sql = 'UPDATE jokes SET thumbsDown=? WHERE id= ?';
+     db.run(sql, thumbsUpdata, function(err){
+          if (err) {
+            return console.error(err.message);
+          }
+          console.log(`Row(s) updated: ${this.changes}`);
+          res.sendStatus(200);
+     })
+    });
+  }else{
+    //required fields missing
+    res.sendStatus(422);
+  }
+});
 
 
 //testing on 2867

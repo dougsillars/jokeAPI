@@ -69,37 +69,37 @@ app.post("/joke", (req, res) => {
 
 
 //retrieve jokes from the DB
-app.get("/joke", (req,res) => {
-  var category = "";
-  category = req.query.category;
-
-  var jokeQuery = 'SELECT id, joke, punchline, thumbsUp, thumbsDown, category, createdAt from jokes WHERE category=="'+category+'"';
-  if (category == null) {
-    //pull category
-    jokeQuery = 'SELECT joke, punchline from jokes';
+app.get("/joke", (req, res) => {
+  var category = req.query.category;
+  var jokeQuery = 'SELECT id, joke, punchline, thumbsUp, thumbsDown, category, createdAt FROM jokes';
+  var params = [];
+  if (category !== undefined) {
+    // pull category
+    jokeQuery += ' WHERE category=?';
+    params.push(category);
   }
+  // Pick a random joke
+  jokeQuery += ' ORDER BY RANDOM() LIMIT 1';
   console.log("jokeQuery", jokeQuery);
-  db.all(jokeQuery, [], (err, rows) => {
-    var numberOfRows = rows.length;
-    console.log("numberOfRows", numberOfRows);
-    rows.forEach((row) => {
-      console.log(row.joke + " " + row.punchline);
-    });
-    //now select a random joke
-    var random = Math.floor(Math.random() * numberOfRows);
-    console.log("random joke", rows[random].joke);
-    console.log("random punchline", rows[random].punchline);
-    var jokeToReturn = {
-      id: rows[random].id,
-      dateAdded: rows[random].createdAt,
-      joke: rows[random].joke,
-      punchline:rows[random].punchline,
-      thumbsUp:rows[random].thumbsUp,
-      thumbsDown: rows[random].thumbsDown,
-      category: rows[random].category
-    };
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify(jokeToReturn));
+  db.all(jokeQuery, params, (err, rows) => {
+    if (rows.length === 0) {
+      res.sendStatus(404);
+    } else {
+      var joke = rows[0];
+      console.log("random joke", joke.joke);
+      console.log("random punchline", joke.punchline);
+      var jokeToReturn = {
+        id: joke.id,
+        dateAdded: joke.createdAt,
+        joke: joke.joke,
+        punchline:joke.punchline,
+        thumbsUp:joke.thumbsUp,
+        thumbsDown: joke.thumbsDown,
+        category: joke.category
+      };
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify(jokeToReturn));
+    }
   });
 });
 
@@ -112,21 +112,26 @@ app.post("/thumbsup", (req, res) => {
   if (jokeId > 0) {
     //we have a JokeId
     //grab the joke from the DB
-    var thumbsUpQuery = 'SELECT id, thumbsUp, createdAt from jokes WHERE id=="'+jokeId+'"';
+    var thumbsUpQuery = 'SELECT id, thumbsUp, createdAt from jokes WHERE id=?';
 
-    db.all(thumbsUpQuery, [], (err, rows) =>{
-      var thumbsUp = rows[0]['thumbsUp'];
-      console.log('thumbsUp', thumbsUp);
-      thumbsUp++;
-      let thumbsUpdata = [thumbsUp, jokeId];
-      let sql = 'UPDATE jokes SET thumbsUp=? WHERE id= ?';
-      db.run(sql, thumbsUpdata, (err) => {
-        if (err) {
-          return console.error(err.message);
-        }
-        console.log(`Row(s) updated: ${this.changes}`);
-        res.sendStatus(200);
-      });
+    db.all(thumbsUpQuery, [jokeId], (err, rows) =>{
+      if (rows.length === 0) {
+        res.sendStatus(404);
+      } else {
+        var thumbsUp = rows[0]['thumbsUp'];
+        console.log('thumbsUp', thumbsUp);
+        thumbsUp++;
+        let thumbsUpdata = [thumbsUp, jokeId];
+        let sql = 'UPDATE jokes SET thumbsUp=? WHERE id= ?';
+        db.run(sql, thumbsUpdata, (err) => {
+          if (err) {
+            res.sendStatus(400);
+            return console.error(err.message);
+          }
+          console.log(`Row(s) updated: ${this.changes}`);
+          res.sendStatus(200);
+        });
+      }
     });
   }else{
     //required fields missing
@@ -136,28 +141,33 @@ app.post("/thumbsup", (req, res) => {
 
 //thumbsdown
 
-app.post("/thumbsdown", (req,res) => {
+app.post("/thumbsdown", (req, res) => {
   //we just need the jokeId
   var jokeId = req.body.id;
-  console.log('jokeId',jokeId);
+  console.log('jokeId', jokeId);
   if (jokeId > 0) {
     //we have a JokeId
     //grab the joke from the DB
-    var thumbsDownQuery = 'SELECT id, thumbsDown, createdAt from jokes WHERE id=="'+jokeId+'"';
+    var thumbsDownQuery = 'SELECT id, thumbsDown, createdAt from jokes WHERE id=?';
 
-    db.all(thumbsDownQuery, [], (err, rows) => {
-      var thumbsDown = rows[0]['thumbsDown'];
-      console.log('thumbsDown', thumbsDown);
-      thumbsDown++;
-      let thumbsDowndata = [thumbsDown, jokeId];
-      let sql = 'UPDATE jokes SET thumbsDown=? WHERE id= ?';
-      db.run(sql, thumbsDowndata, (err) => {
-        if (err) {
-          return console.error(err.message);
-        }
-        console.log(`Row(s) updated: ${this.changes}`);
-        res.sendStatus(200);
-      });
+    db.all(thumbsDownQuery, [jokeId], (err, rows) => {
+      if (rows.length === 0) {
+        res.sendStatus(400);
+      } else {
+        var thumbsDown = rows[0]['thumbsDown'];
+        console.log('thumbsDown', thumbsDown);
+        thumbsDown++;
+        let thumbsDowndata = [thumbsDown, jokeId];
+        let sql = 'UPDATE jokes SET thumbsDown=? WHERE id= ?';
+        db.run(sql, thumbsDowndata, (err) => {
+          if (err) {
+            res.sendStatus(400);
+            return console.error(err.message);
+          }
+          console.log(`Row(s) updated: ${this.changes}`);
+          res.sendStatus(200);
+        });
+      }
     });
   } else {
     //required fields missing
